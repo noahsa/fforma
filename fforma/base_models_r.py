@@ -99,7 +99,7 @@ class ForecastModel(BaseEstimator, RegressorMixin):
         self.model = model
         self.kwargs = kwargs
 
-    def fit(self, y):
+    def fit(self, X, y):
         self.fitted_model_ = fit_forecast_model(y, self.freq, self.model, **self.kwargs)
 
         return self
