@@ -55,6 +55,8 @@ class FFORMA(object):
             self.base_models = {'SeasonalNaive': SeasonalNaive(h, seasonality),
                                 'Naive2': Naive2(h, seasonality),
                                 'RandomWalkDrift': RandomWalkDrift(h)}
+        else:
+            self.base_models = base_models
 
         assert metric in AVAILABLE_METRICS, "Metric not specified in metrics.py"
 
@@ -214,10 +216,11 @@ class FFORMA(object):
 
         weights = self.meta_learner_.predict(features=self.features, tmp=tmp)
         weights = pd.DataFrame(weights,
-                               index=self.features.index,
+                               index=self.features['unique_id'],
                                columns=self.errors.columns)
 
         base_model_preds = base_model_preds.set_index('unique_id')
+
         y_hat = weights * base_model_preds[self.base_models.keys()] #TODO sacar hardcodeado
 
         y_hat_df = base_model_preds
