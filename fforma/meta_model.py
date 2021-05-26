@@ -46,12 +46,13 @@ class MetaModels:
             uid, y = ts
             y = y['y'].values
             name_model, model = deepcopy(meta_model)
-            fitted_model = dask.delayed(model.fit)(None, y) #TODO: correct None
+            #fitted_model = dask.delayed(model.fit)(None, y) #TODO: correct None
+            fitted_model = model.fit(None, y)
             fitted_models.append(fitted_model)
             uids.append(uid)
             name_models.append(name_model)
 
-        fitted_models = dask.delayed(fitted_models).compute(scheduler=self.scheduler)
+        #fitted_models = dask.delayed(fitted_models).compute(scheduler=self.scheduler)
 
         fitted_models = pd.DataFrame.from_dict({'unique_id': uids,
                                                 'model': name_models,
@@ -80,13 +81,14 @@ class MetaModels:
             h = len(df)
             model = self.fitted_models_.loc[(uid, name_model)]
             model = model.item()
-            y_hat = dask.delayed(model.predict)(h)
+            #y_hat = dask.delayed(model.predict)(h)
+            y_hat = model.predict(h)
             forecasts.append(y_hat)
             uids.append(np.repeat(uid, h))
             dss.append(df['ds'])
             name_models.append(np.repeat(name_model, h))
 
-        forecasts = dask.delayed(forecasts).compute(scheduler=self.scheduler)
+        #forecasts = dask.delayed(forecasts).compute(scheduler=self.scheduler)
         forecasts = zip(uids, dss, name_models, forecasts)
 
         forecasts_df = []
@@ -95,11 +97,12 @@ class MetaModels:
                        'ds': ds,
                        'model': name_model,
                        'forecast': forecast}
-            df = dask.delayed(pd.DataFrame.from_dict)(dict_df)
+            #df = dask.delayed(pd.DataFrame.from_dict)(dict_df)
+            df = pd.DataFrame.from_dict(dict_df)
             forecasts_df.append(df)
 
-        forecasts = dask.delayed(forecasts_df).compute()
-        forecasts = pd.concat(forecasts)
+        #forecasts = dask.delayed(forecasts_df).compute()
+        forecasts = pd.concat(forecasts_df)
 
         forecasts = forecasts.set_index(['unique_id', 'ds', 'model']).unstack()
         forecasts = forecasts.droplevel(0, 1).reset_index()
