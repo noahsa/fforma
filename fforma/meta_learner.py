@@ -70,8 +70,8 @@ class MetaLearner(object):
 
         params['num_class'] = len(np.unique(best_models))
 
-        dtrain = lgb.Dataset(data=feats_train, label=indices_train)
-        dvalid = lgb.Dataset(data=feats_val, label=indices_val)
+        dtrain = lgb.Dataset(data=feats_train.drop(columns=['unique_id']), label=indices_train)
+        dvalid = lgb.Dataset(data=feats_val.drop(columns=['unique_id']), label=indices_val)
         valid_sets = [dtrain, dvalid]
 
         self.gbm_model = lgb.train(
@@ -88,6 +88,6 @@ class MetaLearner(object):
     def predict(self, features, tmp=1):
         """
         """
-        scores = self.gbm_model.predict(features, raw_score=True)
+        scores = self.gbm_model.predict(features.set_index('unique_id'), raw_score=True)
         weights = softmax(scores/tmp, axis=1)
         return weights
