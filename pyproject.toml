@@ -15,9 +15,13 @@ lightgbm = "^3.2.1"
 tqdm = "^4.60.0"
 
 [tool.poetry.dev-dependencies]
-jupyter = "^1.0.0"
-isort = "^5.8.0"
 pytest = "^6.2.4"
+pytest-cov = "^2.12.0"
+Sphinx = "^4.0.2"
+sphinx-rtd-theme = "^0.5.2"
+recommonmark = "^0.7.1"
+isort = "^5.8.0"
+jupyter = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
